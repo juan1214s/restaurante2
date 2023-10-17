@@ -1,4 +1,4 @@
-let tabla = document.querySelector(".table tbody");
+let tabla = document.querySelectorAll(".table tbody");
 let platilloPed = document.querySelector(".platillo");
 let clientePed = document.querySelector(".cliente");
 let cantidadPed = document.querySelector(".cantidad");
@@ -8,7 +8,8 @@ let estadoPed = document.querySelector(".estado");
 let idPed = document.querySelector(".id");
 let botonEnviar = document.querySelector("btn-enviar");
 let botonActualizar = document.querySelector(".btn-actualizar");
-let tablas = document.querySelector(".tables tbody");
+let tablas = document.querySelectorAll(".tables tbody");
+
 
 //btn.addEventListener("click", peticionBD);
 //evento al navegador cuando la pagina recarga
@@ -17,34 +18,67 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 
 
-// Seleccionar el elemento tbody dentro de la tabla con la clase "tables"
-
-// Obtén una referencia al elemento tbody dentro de la tabla
-
-
 async function peticionBD() {
     let url = "http://localhost/restaurante2/conexion/peticion.php";
     await fetch(url)
     .then((datos)=> datos.json())
     .then((pedidos)=>{
-        pedidos.forEach( (p, i) => {
+        pedidos.forEach(p =>{
+            if(p.estado === "pedido"){
             let fila = document.createElement("tr");
             fila.innerHTML = `
-             
         
                 <td> ${ p.platillo } </td>
 
                 <td> 
-                <button type="button" onclick="actualizarPedido(${p.id_pedido})"> Entregar </button> 
+                <button type="button" onclick="actualizarPedido(${p.id_pedido}, 'preparando')"> Preparando </button>
+
                     
                 </td> 
             `;
-            tabla.appendChild(fila)
+            tabla[0].appendChild(fila);
+        }else if(p.estado === "preparando"){
+            let fila = document.createElement("tr");
+            fila.innerHTML = `
+        
+                <td> ${ p.platillo } </td>
+
+                <td> 
+                <button type="button" onclick="actualizarPedido(${p.id_pedido}, 'preparado')"> Preparado </button>
+
+                    
+                </td> 
+            `;
+            tabla[1].appendChild(fila);
+        }else if(p.estado === "preparado"){
+            let fila = document.createElement("tr");
+            fila.innerHTML = `
+        
+                <td> ${ p.platillo } </td>
+
+                <td> 
+
+                <button type="button" onclick="alertas()"> Finalizado </button>
+
+                    
+                </td> 
+                
+
+                
+            `;
+            tabla[2].appendChild(fila);
+        }
+        
         });
-        //la clave es enlasar los de javascript o sea las funciones y crear la q necesito en php
+        
     })
     .catch((error)=> console.log(error));
 }
+
+function alertas(){
+    swal("PEDIDO FINALIZADO!!", "Tu pedido esta listo", "success");
+}
+
 function obtenerDatos() {
     if (platilloPed.value == "" || clientePed.value == "" || cantidadPed.value == ""
         || precioPed.value == "" || observacionesPed.value == "") {
@@ -71,14 +105,9 @@ function obtenerDatos() {
         return datosForm;
     }
 
-
+    
 }
 
-
-botonEnviar.addEventListener("click", function () {
-    let objecto = obtenerDatos();
-    enviarDatos(objecto);
-});
 //enviar los datos al servidor
 function enviarDatos( datos ) {
     let url = "http://localhost/restaurante2/conexion/peticion.php";
@@ -109,14 +138,17 @@ function enviarDatos( datos ) {
 }
 
 //actualizar datos de la tabla
-function actualizarPedido(id) {
+function actualizarPedido(id,estados) {
     let url = "http://localhost/restaurante2/conexion/peticion.php";
     fetch(url, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id_pedido: id, estado: 'entregado' }) // Cambia 'datos' por el objeto que quieres enviar
+        body: JSON.stringify({ id_pedido: id, estado: estados })
+
+       // body: JSON.stringify({ id_pedido: id, estado: "preparando" })
+        // Cambia 'datos' por el objeto que quieres enviar
     })
     .then(respuesta => {
         if (!respuesta.ok) {
@@ -127,7 +159,8 @@ function actualizarPedido(id) {
     .then(mensaje => {
         // Mostrar la respuesta del servidor
         console.log(mensaje);
-        alert("Pedido actualizado correctamente");
+        swal("Pedido Actualizado Correctamente", "", "success");
+        // alert("Pedido actualizado correctamente");
         limpiarTabla();
         peticionBD();
     })
