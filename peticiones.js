@@ -6,8 +6,7 @@ let precioPed = document.querySelector(".precio");
 let observacionesPed= document.querySelector(".observaciones");
 let estadoPed = document.querySelector(".estado");
 let idPed = document.querySelector(".id");
-let botonEnviar = document.querySelector("btn-enviar");
-let botonActualizar = document.querySelector(".btn-actualizar");
+let botonEnviar = document.querySelector(".btn-enviar");
 let tablas = document.querySelectorAll(".tables tbody");
 
 //btn.addEventListener("click", peticionBD);
@@ -143,6 +142,11 @@ async function peticionesBD() {
     .catch((error)=> console.log(error));
 }
 
+botonEnviar.addEventListener("click", function () {
+    let objecto = obtenerDatos();
+    enviarDatos(objecto);
+});
+
 function alertas(){
     swal("PEDIDO FINALIZADO!!", "Tu pedido esta listo", "success");
 }
@@ -244,30 +248,7 @@ function actualizarPedido(id,estados) {
 
 
 
-function actualizarPedidos(id) {
-    let url = "http://localhost/apiRestaurante/peticiones.php";
-    fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(id)
-    })
-    .then(respuesta => {
-        if (!respuesta.ok) {
-          throw new Error('No se pudo enviar el id');
-        }
-        return respuesta.json();
-    })
-    .then(platillo => {
 
-        estadoPed.value = platillo.estado;
-        idPed.value = platillo.id_pedido;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
 
 //limpiar los datos de la tabla
 function limpiarTabla() {
