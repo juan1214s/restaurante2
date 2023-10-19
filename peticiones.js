@@ -10,12 +10,14 @@ let botonEnviar = document.querySelector("btn-enviar");
 let botonActualizar = document.querySelector(".btn-actualizar");
 let tablas = document.querySelectorAll(".tables tbody");
 
-
 //btn.addEventListener("click", peticionBD);
 //evento al navegador cuando la pagina recarga
 document.addEventListener("DOMContentLoaded", function(){
     peticionBD();
+    peticionesBD();
+
 });
+
 
 
 async function peticionBD() {
@@ -67,7 +69,73 @@ async function peticionBD() {
                 
             `;
             tabla[2].appendChild(fila);
+        }else if(p.estado === "preparado"){
+            let fila = document.createElement("tr");
+            fila.innerHTML = `
+        
+                <td> ${ p.precio } </td>
+                <td> ${ p.platillo } </td>
+
+                <td> 
+
+                <button type="button" onclick="alertas()"> Finalizado </button>
+
+                    
+                </td> 
+                
+
+                
+            `;
+            tablas[0].appendChild(fila);
         }
+        
+        
+        });
+        
+    })
+    .catch((error)=> console.log(error));
+}
+
+
+async function peticionesBD() {
+    let url = "http://localhost/restaurante2/conexion/peticion.php";
+    await fetch(url)
+    .then((datos)=> datos.json())
+    .then((pedidos)=>{
+        pedidos.forEach(p =>{
+          if(p.estado === "preparado"){
+            let fila = document.createElement("tr");
+            fila.innerHTML = `
+        
+    
+                <td> ${ p.platillo } </td>
+
+                <td> 
+                <button type="button" onclick="actualizarPedido(${p.id_pedido}, 'entregado')"> Entregar </button>     
+                </td> 
+                
+
+                
+            `;
+            tablas[0].appendChild(fila);
+        }
+          if(p.estado === "entregado"){
+            let fila = document.createElement("tr");
+            fila.innerHTML = `
+        
+    
+                <td> ${ p.platillo } </td>
+
+                <td> 
+                <button type="button" onclick="alertas()"> Finalizado </button>
+                </td> 
+                
+
+                
+            `;
+            tablas[1].appendChild(fila);
+        }
+        
         
         });
         
