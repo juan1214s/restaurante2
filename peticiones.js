@@ -127,7 +127,7 @@ async function peticionesBD() {
                 <td> ${ p.platillo } </td>
 
                 <td> 
-                <button type="button" onclick="alertas()"> Finalizado </button>
+                <button type="button" onclick="alerta()"> ENTREGADO </button>
                 </td> 
                 
 
@@ -145,6 +145,10 @@ async function peticionesBD() {
 
 function alertas(){
     swal("PEDIDO FINALIZADO!!", "Tu pedido esta listo", "success");
+}
+
+function alerta(){
+    swal("PEDIDO ENTREGADO!!", "Tu pedido esta listo", "success");
 }
 
 function obtenerDatos() {
